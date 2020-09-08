@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import ncnn
 import sys
 import cv2
@@ -15,9 +16,9 @@ def return_euclidean_distance(feature_1, feature_2):
 
 start = time.time()
 net = ncnn.Net()
-param = "mobilefacenets.param"
+param = "model/mobilefacenets.param"
 net.load_param(param)
-model = "mobilefacenets.bin"
+model = "model/mobilefacenets.bin"
 net.load_model(model)
 
 imagepath = sys.argv[1]
