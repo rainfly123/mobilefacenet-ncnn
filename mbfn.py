@@ -32,7 +32,9 @@ class MobileFaceNetV3():
         img_w = img.shape[1]
         print(img_h, img_w)
         img_aligned = preprocess.preprocess(img, bbox, landmark, image_size="112,112")
-        mat_in = ncnn.Mat.from_pixels(img_aligned, ncnn.Mat.PixelType.PIXEL_BGR2RGB, img_w, img_h)
+        print(img_aligned.shape[0])
+        print(img_aligned.shape[1])
+        mat_in = ncnn.Mat.from_pixels(img_aligned, ncnn.Mat.PixelType.PIXEL_BGR2RGB, 112, 112)
         out_mat = ncnn.Mat()
         ex = self.net.create_extractor()
         ex.set_light_mode(True)
@@ -43,8 +45,13 @@ class MobileFaceNetV3():
         print(time.time()-start)
         print(mat_np)
         print(mat_np.shape)
+        return mat_np
  
 if __name__ == '__main__':
     imagepath = sys.argv[1]
     a = MobileFaceNetV3()
-    a.extract(imagepath)
+    one = a.extract(imagepath)
+
+    imagepath = sys.argv[2]
+    two = a.extract(imagepath)
+    print(return_euclidean_distance(one, two))
