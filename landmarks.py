@@ -2,10 +2,11 @@ import dlib
 import sys
 import cv2
 
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+
 def landmarks(img_rd):
     img_rd = cv2.resize(img_rd, (112, 112))
-    detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
     faces = detector(img_rd, 0)
     total  = len(faces)
     loc = list()
@@ -21,6 +22,15 @@ def landmarks(img_rd):
     return total, loc
 
 if __name__ == "__main__":
+    import time
+    s = time.time()
     img_rd = cv2.imread(sys.argv[1])
     total, loc = landmarks(img_rd)
     print(total, loc)
+    print(time.time()-s)
+
+    s = time.time()
+    img_rd = cv2.imread(sys.argv[1])
+    total, loc = landmarks(img_rd)
+    print(total, loc)
+    print(time.time()-s)
