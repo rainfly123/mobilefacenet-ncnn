@@ -7,6 +7,7 @@ import time
 import sklearn
 import preprocess
 import dlib
+import landmarks
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
@@ -26,7 +27,6 @@ class MobileFaceNetV3():
         self.net.load_model(self.model)
 
     def extract(self, img_file, bbox=None, landmark=None):
-        start = time.time()
         img = None
         if isinstance (img_file, str):
             img = cv2.imread(img_file, cv2.IMREAD_COLOR)
@@ -52,10 +52,7 @@ class MobileFaceNetV3():
 
         img_h = img.shape[0]
         img_w = img.shape[1]
-        print(img_h, img_w)
         img_aligned = preprocess.preprocess(img, bbox, landmark, image_size="112,112")
-        print(img_aligned.shape[0])
-        print(img_aligned.shape[1])
         _mean_val = [103.94, 116.78, 123.68]
         _norm_val = [0.017, 0.017, 0.017]
         mat_in = ncnn.Mat.from_pixels(img_aligned, ncnn.Mat.PixelType.PIXEL_BGR2RGB, 112, 112)
@@ -67,45 +64,22 @@ class MobileFaceNetV3():
         ex.input("data", mat_in)
         ex.extract("fc1", out_mat)
         mat_np = np.array(out_mat)
-        print(time.time()-start)
-        print(mat_np)
-        print(mat_np.shape)
+        #print(mat_np)
         return mat_np
  
 if __name__ == '__main__':
-    imagepath = sys.argv[1]
     a = MobileFaceNetV3()
-    face = [(36, 27), (81, 88)]
-    landmarks = [[44, 50],
-    [64, 48],
-    [52, 61],
-    [49, 74],
-    [64, 72]]
-
-
-    one = a.extract(imagepath, face, np.array(landmarks))
-    face = [(26, 15), (80, 87)]
-    landmarks = [[43, 42],
-    [68, 39],
-    [60, 55],
-    [49, 70],
-    [67, 68]]
-
-    #face = [(8.502714,14.343232),(80.722153,111.959419)]
-    #landmarks = [[35.655495,51.941391],
-    #[72.178925,50.039986],
-    #[62.813644,75.130249],
-    #[42.298843,94.859428],
-    #[69.364922,92.023705]]
-    #face = [[81.634132,63.898113],[168.298065,188.654816]]
-    #landmarks = [[105.233978,116.180077],
-    #[148.200150,114.604431],
-    #[129.626297,142.620178],
-    #[108.363571,156.601608],
-    #[148.144699,154.504211]]
+    t = time.time()
+    imagepath = sys.argv[1]
+    img = cv2.imread(imagepath, cv2.IMREAD_COLOR)
+    total, loc = landmarks.landmarks(img)
+    for x in range(total):
+        one = a.extract(img, None, np.array(loc[x]))
 
     imagepath = sys.argv[2]
-    t = time.time()
-    two = a.extract(imagepath, face, np.array(landmarks))
+    img = cv2.imread(imagepath, cv2.IMREAD_COLOR)
+    total, loc = landmarks.landmarks(img)
+    for x in range(total):
+        two = a.extract(img, None, np.array(loc[x]))
     print(time.time()-t)
     print(return_euclidean_distance(one, two) )
