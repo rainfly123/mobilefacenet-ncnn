@@ -83,7 +83,7 @@ if __name__ == '__main__':
     [64, 72]]
 
 
-    one = a.extract(imagepath, None, np.array(landmarks))
+    one = a.extract(imagepath, face, np.array(landmarks))
     face = [(26, 15), (80, 87)]
     landmarks = [[43, 42],
     [68, 39],
@@ -91,13 +91,21 @@ if __name__ == '__main__':
     [49, 70],
     [67, 68]]
 
-    face = [(8.502714,14.343232),(80.722153,111.959419)]
-    landmarks = [[35.655495,51.941391],
-    [72.178925,50.039986],
-    [62.813644,75.130249],
-    [42.298843,94.859428],
-    [69.364922,92.023705]]
+    #face = [(8.502714,14.343232),(80.722153,111.959419)]
+    #landmarks = [[35.655495,51.941391],
+    #[72.178925,50.039986],
+    #[62.813644,75.130249],
+    #[42.298843,94.859428],
+    #[69.364922,92.023705]]
+    #face = [[81.634132,63.898113],[168.298065,188.654816]]
+    #landmarks = [[105.233978,116.180077],
+    #[148.200150,114.604431],
+    #[129.626297,142.620178],
+    #[108.363571,156.601608],
+    #[148.144699,154.504211]]
 
     imagepath = sys.argv[2]
-    two = a.extract(imagepath, None, np.array(landmarks))
+    t = time.time()
+    two = a.extract(imagepath, face, np.array(landmarks))
+    print(time.time()-t)
     print(return_euclidean_distance(one, two) )
