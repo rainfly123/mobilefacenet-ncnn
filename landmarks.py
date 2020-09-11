@@ -27,4 +27,9 @@ if __name__ == "__main__":
     total, loc = landmarks(img_rd)
     print(total, loc)
     print(time.time()-s)
+    point = loc[0]
+    for x in point:
+        cv2.circle(img_rd,(x[0],x[1]),3,(0,0,255))
 
+    cv2.imshow("3333", img_rd)
+    cv2.waitKey(0)

@@ -85,4 +85,4 @@ if __name__ == '__main__':
         one= a.extract(img, None, np.array(loc[x]))
     #print(time.time()-t)
     for x in  features_known_arr:
-        print(return_euclidean_distance(one, x) )
+        print(return_euclidean_distance(one, x) ,features_known_arr.index(x) + 1)
