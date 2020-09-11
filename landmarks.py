@@ -7,7 +7,6 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 def landmarks(img_rd):
     faces = detector(img_rd, 0)
-    print(len(faces))
     total  = len(faces)
     loc = list()
     for i in range(total) :

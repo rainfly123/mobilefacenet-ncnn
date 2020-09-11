@@ -64,25 +64,27 @@ class MobileFaceNetV3():
         ex.input("data", mat_in)
         ex.extract("fc1", out_mat)
         mat_np = np.array(out_mat)
+        out=""
+        for x in range(128):
+            t = "{},".format(mat_np[x])
+            out += t
+        out = out[:-1] + '\n'
+        with open('feature', "a") as fs:
+            fs.write(out)
         return mat_np
  
 if __name__ == '__main__':
-    features_known_arr = list()
-    if 1:
-        if 1:
-            lines = open('feature').readlines()
-            for i in range(len(lines)):
-                line = lines[i]
-                line = line.strip()
-                #print(line.split(','))
-                features_someone_arr = [ float(x) for x in line.split(',')]
-                features_known_arr.append(features_someone_arr)
+    import glob
+    f = glob.glob('data/*.jpg')
     a = MobileFaceNetV3()
-    imagepath = sys.argv[1]
-    img = cv2.imread(imagepath, cv2.IMREAD_COLOR)
-    total, loc = landmarks.landmarks(img)
-    for x in range(total):
-        one= a.extract(img, None, np.array(loc[x]))
-    #print(time.time()-t)
-    for x in  features_known_arr:
-        print(return_euclidean_distance(one, x) )
+    i = 1
+    for image in f:
+        img = cv2.imread(image, cv2.IMREAD_COLOR)
+        total, loc = landmarks.landmarks(img)
+        if total != 1:
+            continue
+        one = a.extract(img, None, np.array(loc[0]))
+        print(image, i)
+        i+=1
+
+    
