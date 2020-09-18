@@ -8,6 +8,8 @@ import sklearn
 import preprocess
 import dlib
 import landmarks
+import torchvision.models as models
+import torch
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
@@ -50,11 +52,15 @@ class MobileFaceNetV3():
         return []
         """
 
+        """
         img_h = img.shape[0]
         img_w = img.shape[1]
         img_aligned = preprocess.preprocess(img, bbox, landmark, image_size="112,112")
         _mean_val = [103.94, 116.78, 123.68]
         _norm_val = [0.017, 0.017, 0.017]
+        cv2.imshow("dd", img_aligned)
+        cv2.waitKey(0)
+        img_aligned = np.transpose(img_aligned, (2,0,1))
         mat_in = ncnn.Mat.from_pixels(img_aligned, ncnn.Mat.PixelType.PIXEL_BGR2RGB, 112, 112)
         mat_in.substract_mean_normalize(_mean_val, _norm_val);
         out_mat = ncnn.Mat()
@@ -65,11 +71,29 @@ class MobileFaceNetV3():
         ex.extract("fc1", out_mat)
         mat_np = np.array(out_mat)
         return mat_np
+        """
+
+        img_h = img.shape[0]
+        img_w = img.shape[1]
+        img_aligned = preprocess.preprocess(img, bbox, landmark, image_size="112,112")
+        _mean_val = [103.94, 116.78, 123.68]
+        _norm_val = [0.017, 0.017, 0.017]
+        img_aligned = np.transpose(img_aligned, (2,0,1))
+        img_aligned = img_aligned.astype(int)
+        model = models.mobilenet_v2(pretrained=True)
+        model.eval()
+        img_aligned = torch.from_numpy(img_aligned)
+        img_aligned = img_aligned.unsqueeze(0)
+        out = model(img_aligned)
+        ok=out.detach().numpy()
+        o= nl(ok, axis=1)
+        o= o.flatten()
+        return o
  
 if __name__ == '__main__':
     features_known_arr = list()
-    if 1:
-        if 1:
+    if 0:
+        if 0:
             lines = open('feature').readlines()
             for i in range(len(lines)):
                 line = lines[i]
@@ -84,5 +108,13 @@ if __name__ == '__main__':
     for x in range(total):
         one= a.extract(img, None, np.array(loc[x]))
     #print(time.time()-t)
-    for x in  features_known_arr:
-        print(return_euclidean_distance(one, x) ,features_known_arr.index(x) + 1)
+    #for x in  features_known_arr:
+    #    print(return_euclidean_distance(one, x) ,features_known_arr.index(x) + 1)
+    a = MobileFaceNetV3()
+    imagepath = sys.argv[2]
+    img = cv2.imread(imagepath, cv2.IMREAD_COLOR)
+    total, loc = landmarks.landmarks(img)
+    for x in range(total):
+        two = a.extract(img, None, np.array(loc[x]))
+    print(return_euclidean_distance(one, x))
+    #
