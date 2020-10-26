@@ -70,7 +70,7 @@ if __name__ == '__main__':
     imagepath = sys.argv[1]
     allf = all_files("/home/rain/lfw")
     all_features = list()
-    total = 1000
+    total = 100000
     for x in allf:
         m = cv2.imread(x)
         net =  retinaface.RetinaFace()

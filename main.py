@@ -16,23 +16,26 @@ if __name__ == "__main__":
         sys.exit(0)
    
     mfn = mbfn.MobileFaceNetV3()
-    s = time.time()
 
     imagepath = sys.argv[1]
     m = cv2.imread(imagepath)
     net =  retinaface.RetinaFace()
+    s = time.time()
     faceobjects = net(m)
     lm = [[p.x,p.y] for p in faceobjects[0].landmark]
     lm = np.array(lm)
     features_a = mfn.extract(m, lm)
     print("used", time.time()-s, "s")
-    most = 0
-    filename = ""
     for x in allf:
         features_b = x['features']
         similar = mbfn.return_similarity(features_a, features_b)
-        print("with: ", x['file'], similar)
-        if similar > most:
-            most = similar
-            filename = x['file']
-    print("The most similar is:", filename, most)
+        #print("with: ", x['file'], similar)
+        x['similar']  = similar
+
+    result = sorted(allf, key = lambda kv:(kv['similar'], kv['file']), reverse=True)     
+    most = 10
+    for x in result:
+        print(x['file'], x['similar'])
+        most -= 1
+        if most <= 0:
+            break
