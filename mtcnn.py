@@ -6,32 +6,27 @@ import numpy as np
 import time
 import sklearn
 import preprocess
-import dlib
-import landmarks
 from PIL import Image
-import torchvision.transforms as transforms
 
-detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
-
-def return_euclidean_distance(feature_1, feature_2):
-    feature_1 = np.array(feature_1)
-    feature_2 = np.array(feature_2)
-    dist = np.sqrt(np.sum(np.square(feature_1 - feature_2)))
-    return dist
-
-resize = transforms.Resize([114, 114])
-to_tensor = transforms.ToTensor()
-normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
-
-class MobileFaceNetV3():
+class Mtcnn():
     def __init__(self):
         self.net = ncnn.Net()
-        self.param = "model/mobilefacenets.param"
-        self.model = "model/mobilefacenets.bin"
-        self.net.load_param(self.param)
-        self.net.load_model(self.model)
+        self.pparam = "model/det1.param"
+        self.pmodel = "model/det1.bin"
+        self.rparam = "model/det2.param"
+        self.rmodel = "model/det2.bin"
+        self.oparam = "model/det3.param"
+        self.omodel = "model/det3.bin"
+        self.nparam = "model/det4.param"
+        self.nmodel = "model/det4.bin"
+        self.pnet.load_param(self.pparam)
+        self.pnet.load_model(self.pmodel)
+        self.rnet.load_param(self.rparam)
+        self.rnet.load_param(self.rparam)
+        self.onet.load_param(self.oparam)
+        self.onet.load_model(self.omodel)
+        self.nnet.load_model(self.nmodel)
+        self.nnet.load_model(self.nmodel)
 
     def extract(self, m, l , img_file, bbox=None, landmark=None):
         img = None
