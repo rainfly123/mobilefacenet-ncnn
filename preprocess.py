@@ -69,7 +69,6 @@ def preprocess(img, landmark=None, **kwargs):
     tform.estimate(dst, src)
     M = tform.params[0:2,:]
     #M = cv2.estimateRigidTransform( dst.reshape(1,5,2), src.reshape(1,5,2), False)
-
   if M is None:
     if 1: #use center crop
       det = np.zeros(4, dtype=np.int32)

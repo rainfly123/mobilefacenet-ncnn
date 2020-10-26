@@ -8,13 +8,10 @@ import sklearn
 import preprocess
 
 
-def return_euclidean_distance(feature_1, feature_2):
-    feature_1 = np.array(feature_1)
-    feature_2 = np.array(feature_2)
-    dist = np.sqrt(np.sum(np.square(feature_1 - feature_2)))
-    return dist
-
-
+def return_similarity(feature_1, feature_2):
+    #feature_1 = np.array(feature_1)
+    #feature_2 = np.array(feature_2)
+    return np.sum(feature_1 * feature_2)
 
 class MobileFaceNetV3():
     def __init__(self):
@@ -35,7 +32,7 @@ class MobileFaceNetV3():
         img_h = img.shape[0]
         img_w = img.shape[1]
         img_aligned = preprocess.preprocess(img, landmark, image_size="112,112")
-        img_aligned = img_aligned.unsqueeze(0)
+        #img_aligned = img_aligned.unsqueeze(0)
         mat_in = ncnn.Mat.from_pixels(img_aligned, ncnn.Mat.PixelType.PIXEL_BGR2RGB, 112, 112)
         ex = self.net.create_extractor()
         ex.set_num_threads(self.num_threads)
@@ -44,8 +41,32 @@ class MobileFaceNetV3():
         ex.extract("fc1", out)
         out = np.array(out)
         out = np.divide(out, np.sqrt(np.sum(np.square(out))))
-        print(out)
-        return o
+        #print(out)
+        return out
  
 if __name__ == '__main__':
-    #
+    import retinaface
+
+    if len(sys.argv) != 3:
+        print("Usage: %s [imagepath]\n"%(sys.argv[0]))
+        sys.exit(0)
+   
+    mfn = MobileFaceNetV3()
+    s = time.time()
+
+    imagepath = sys.argv[1]
+    m = cv2.imread(imagepath)
+    net =  retinaface.RetinaFace()
+    faceobjects = net(m)
+    lm = [[p.x,p.y] for p in faceobjects[0].landmark]
+    lm = np.array(lm)
+    features_a = mfn.extract(m, lm)
+
+    imagepath = sys.argv[2]
+    m = cv2.imread(imagepath)
+    faceobjects = net(m)
+    lm = [[p.x,p.y] for p in faceobjects[0].landmark]
+    lm = np.array(lm)
+    features_b = mfn.extract(m, lm)
+    print(return_similarity(features_a, features_b))
+    print("used", time.time()-s, "s")
