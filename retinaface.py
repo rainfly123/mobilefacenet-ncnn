@@ -285,3 +285,9 @@ if __name__ == "__main__":
     faceobjects = net(m)
     print(time.time() - s)
     draw_faceobjects(m, faceobjects)
+    if len(faceobjects) == 1:
+        print(faceobjects[0].landmark[0].x, faceobjects[0].landmark[0].y)
+        print(faceobjects[0].landmark[1].x, faceobjects[0].landmark[1].y)
+        print(faceobjects[0].landmark[2].x, faceobjects[0].landmark[2].y)
+        print(faceobjects[0].landmark[3].x, faceobjects[0].landmark[3].y)
+        print(faceobjects[0].landmark[4].x, faceobjects[0].landmark[4].y)
