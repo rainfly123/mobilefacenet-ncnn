@@ -279,10 +279,9 @@ if __name__ == "__main__":
     if m is None:
         print("cv2.imread %s failed\n"%(imagepath))
         sys.exit(0)
-
+    import time
+    s = time.time()
     net =  RetinaFace()
-
     faceobjects = net(m)
-    print(dir(faceobjects))
-
+    print(time.time() - s)
     draw_faceobjects(m, faceobjects)
