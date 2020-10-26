@@ -25,9 +25,6 @@ def parse_lst_line(line):
   #print(aligned)
   return image_path, label, bbox, landmark, aligned
 
-
-
-
 def read_image(img_path, **kwargs):
   mode = kwargs.get('mode', 'rgb')
   layout = kwargs.get('layout', 'HWC')
@@ -43,7 +40,7 @@ def read_image(img_path, **kwargs):
   return img
 
 
-def preprocess(img, bbox=None, landmark=None, **kwargs):
+def preprocess(img, landmark=None, **kwargs):
   if isinstance(img, str):
     img = read_image(img, **kwargs)
   M = None
@@ -66,7 +63,7 @@ def preprocess(img, bbox=None, landmark=None, **kwargs):
       [62.7299, 92.2041] ], dtype=np.float32 )
     if image_size[1]==112:
       src[:,0] += 8.0
-    dst = landmark.astype(np.float32)
+    dst = landmark
 
     tform = trans.SimilarityTransform()
     tform.estimate(dst, src)
@@ -74,14 +71,13 @@ def preprocess(img, bbox=None, landmark=None, **kwargs):
     #M = cv2.estimateRigidTransform( dst.reshape(1,5,2), src.reshape(1,5,2), False)
 
   if M is None:
-    if bbox is None: #use center crop
+    if 1: #use center crop
       det = np.zeros(4, dtype=np.int32)
       det[0] = int(img.shape[1]*0.0625)
       det[1] = int(img.shape[0]*0.0625)
       det[2] = img.shape[1] - det[0]
       det[3] = img.shape[0] - det[1]
-    else:
-      det = bbox
+
     margin = kwargs.get('margin', 44)
     bb = np.zeros(4, dtype=np.int32)
     bb[0] = np.maximum(det[0]-margin/2, 0)
