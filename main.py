@@ -19,6 +19,9 @@ if __name__ == "__main__":
 
     imagepath = sys.argv[1]
     m = cv2.imread(imagepath)
+    img_h = m.shape[0]
+    img_w = m.shape[1]
+    m = cv2.resize(m, (img_w//2, img_h//2))
     net =  retinaface.RetinaFace()
     s = time.time()
     faceobjects = net(m)
