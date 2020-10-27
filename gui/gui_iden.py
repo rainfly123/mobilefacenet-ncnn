@@ -9,6 +9,7 @@ import time
 import subprocess
 from retinaface import RetinaFace
 from mbfn import MobileFaceNetV3
+from mbfn import return_similarity
 #from sfas import fake
 
 def show_succeed(name, filename):
@@ -24,6 +25,7 @@ def show_succeed(name, filename):
     win.close()
 
 def start():
+    mfn = MobileFaceNetV3()
     layout= [
             [sg.Image(filename="logo.png", size=(1200,950), pad=(25,25), key="image")],
             ]
@@ -58,27 +60,26 @@ def start():
         faces = []
         if (time.time() - last_time > 2.0) and process_image:
             img_rd = cv2.resize(frame, (320, 240))
-            faces = detector(img_rd, 0)
+            faces = Detect(img_rd)
         process_image = not process_image
         if len(faces) != 0:
-            for k in range(len(faces)):
-                shape = predictor(img_rd, faces[k])
-                features_cap_arr = facerec.compute_face_descriptor(img_rd, shape)
-                e_distance_list = []
-                for i in range(len(features_known_arr)):
-                    if str(features_known_arr[i][0]) != '0.0':
-                        e_distance_tmp = return_euclidean_distance(features_cap_arr, features_known_arr[i])
-                        print("with person", str(i + 1), "the e distance: ", e_distance_tmp)
-                        e_distance_list.append(e_distance_tmp)
-                    else:
-                        e_distance_list.append(999)
-
-                if e_distance_list and min(e_distance_list) < 0.42:
-                    val = fake.real_face_ncnn(img_rd, [faces[k].left(), faces[k].top(), faces[k].right(), faces[k].bottom()])
-                    if val <= 0.95:
-                        break
-                    similar_person_num = e_distance_list.index(min(e_distance_list))
-                    show_succeed(similar_person_num + 1)
+            for obj in faces:
+                lm = [[p.x,p.y] for p in obj.landmark]
+                lm = np.array(lm)
+                features_a = mfn.extract(m, lm)
+                most = 0.0
+                most_p = None
+                for x in allf:
+                    features_b = x['features']
+                    similar = mbfn.return_similarity(features_a, features_b)
+                    if similar > most:
+                        most = similar
+                        most_p = x
+                if most_p and most > 0.8:
+                    #val = fake.real_face_ncnn(img_rd, [obj.rect.x, obj.rect.y, obj.rect.x+obj.rect.w, obj.rect.y+obj.rect.h])
+                    #if val <= 0.95:
+                    #    break
+                    show_succeed(x['name'], x['file'])
 
                     im = Image.fromarray(img_rd)
                     draw = ImageDraw.Draw(im)
@@ -98,6 +99,11 @@ def start():
                     return
                     last_time = time.time()
     window.close()
+
+def Detect(img):
+    net =  RetinaFace()
+    faceobjects = net(img)
+    return faceobjects
 
 if __name__ == "__main__":
     start()
