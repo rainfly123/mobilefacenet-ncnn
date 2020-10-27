@@ -23,5 +23,14 @@ and generate featues file use pickle module
 
 
 # IF you want to test it  in GUI mode   
+please install PySimpleGui, numpy,  PIL and opencv  at first   
+then   
 
-please install PySimpleGui, numpy,  PIL and opencv
+```
+git clone https://github.com/rainfly123/mobilefacenet-ncnn/
+cd mobilefacenet-ncnn
+cd gui
+git submodule update --init --recursive
+```
+
+the sfas module is used for Silent-Face-Anti-Spoofing   
