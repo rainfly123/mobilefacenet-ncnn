@@ -21,3 +21,7 @@ and generate featues file use pickle module
 
 4. retiface.py is used to detect face region and 5 points (left eye, right eye , nose, left/right mouth corner)  
 
+
+# IF you want to test it  in GUI mode   
+
+please install PySimpleGui, numpy,  PIL and opencv
