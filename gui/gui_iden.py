@@ -50,8 +50,8 @@ def start():
             cap.release()
             break
 
-        ret, img_rd = cap.read()
-        frame = cv2.cvtColor(img_rd, cv2.COLOR_BGR2RGB)
+        ret, oframe = cap.read()
+        frame = cv2.cvtColor(oframe, cv2.COLOR_BGR2RGB)
         im = Image.fromarray(frame)
         draw = ImageDraw.Draw(im)
         draw.text(xy=(130, 40), text='确保人脸在红色方框内', fill=(255, 255, 0), font=font)
@@ -64,7 +64,7 @@ def start():
         t = None
         if (time.time() - last_time > 2.0) and process_image:
             t = time.time()
-            img_rd = cv2.resize(img_rd, (320,240))
+            img_rd = cv2.resize(oframe, (320,240))
             faces = detector(img_rd)
         process_image = not process_image
         if len(faces) != 0:

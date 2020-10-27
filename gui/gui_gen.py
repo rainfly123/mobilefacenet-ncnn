@@ -89,18 +89,19 @@ def start():
                             name = RandomStr()
                             file_name = path_photos_from_camera + "/{}.jpg".format(name)
                             cv2.imwrite(file_name, img_blank)
+
                             lm = [[p.x,p.y] for p in obj.landmark]
                             lm = np.array(lm)
                             features = mfn.extract(img_rd, lm)
-                            all_features.append({"file":file_name, "features":features, "name":values['name']})
                             if len(features) != 128:
                                 person_cnt -= 1
                                 os.remove(file_name)
                                 print("gen feature error, so remove jpg")
                                 sg.PopupError("特征提取失败!", font="Any 18", auto_close=True, auto_close_duration=2)
                             else:
+                                all_features.append({"file":file_name, "features":features, "name":values['name']})
                                 print("Save into：", file_name)
-                                pickle.dump(all_features, open('.features','ab+'))
+                                pickle.dump(all_features, open('.features','wb'))
                                 sg.PopupOK("人脸注册成功", font="Any 18", auto_close=True, auto_close_duration=2)
                                 #只录入一次就退出
                                 event, values = window.read(2000)
