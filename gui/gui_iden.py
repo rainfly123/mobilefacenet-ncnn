@@ -80,7 +80,7 @@ def start():
                     if similar > most:
                         most = similar
                         most_p = x
-                print("most similarity:", most)
+                print("most similarity: ", most, most_p['name'])
                 if most_p and most > 0.8:
                     val = fake.real_face_ncnn(img_rd, [obj.rect.x, obj.rect.y, obj.rect.x+obj.rect.w, obj.rect.y+obj.rect.h])
                     print("reality", val)
