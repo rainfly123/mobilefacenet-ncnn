@@ -30,9 +30,10 @@ def pre_work_mkdir():
 def start():
     mfn = MobileFaceNetV3()
     pre_work_mkdir()
-    all_features  = None
-    with open(".features", 'rb') as db:
-        all_features  = pickle.load(db)
+    all_features  = list()
+    if os.access('.features', os.R_OK):
+        with open(".features", 'rb') as db:
+            all_features  = pickle.load(db)
 
     font = ImageFont.truetype(font='simsun.ttc', size=40)
 
@@ -78,7 +79,7 @@ def start():
                         h = int(height/2)
                         w = int(width/2)
                         print(x+w, y+h, x-w, y-h)
-                        if (x + w) > 640 or (y + h > 480) or (x - w < 0) or (y - h < 0):
+                        if (x + w) > 320 or (y + h > 240) or (x - w < 0) or (y - h < 0):
                             sg.PopupError("特征提取失败，确保人脸在红色方框内", font="Any 18", auto_close=True, auto_close_duration=2)
                         else:
                             img_blank = np.zeros(((height*2), (width*2), 3), np.uint8)
@@ -90,7 +91,7 @@ def start():
                             cv2.imwrite(file_name, img_blank)
                             lm = [[p.x,p.y] for p in obj.landmark]
                             lm = np.array(lm)
-                            features = mfn.extract(img_blank, lm)
+                            features = mfn.extract(img_rd, lm)
                             all_features.append({"file":file_name, "features":features, "name":values['name']})
                             if len(features) != 128:
                                 person_cnt -= 1
@@ -102,7 +103,7 @@ def start():
                                 pickle.dump(all_features, open('.features','ab+'))
                                 sg.PopupOK("人脸注册成功", font="Any 18", auto_close=True, auto_close_duration=2)
                                 #只录入一次就退出
-                                event, values = window.read(3000)
+                                event, values = window.read(2000)
                                 capture.release()
                                 window.close()
                                 return
@@ -122,7 +123,7 @@ def start():
             im = im.resize((1216, 912),Image.ANTIALIAS)
             tkimage = ImageTk.PhotoImage(image=im)
             window.FindElement("image").update(data=tkimage)
-            img_rd = oframe
+            img_rd = cv2.resize(oframe , (320,240))
 
     window.close()
                  

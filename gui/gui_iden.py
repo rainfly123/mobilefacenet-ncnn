@@ -64,25 +64,15 @@ def start():
         t = None
         if (time.time() - last_time > 2.0) and process_image:
             t = time.time()
+            img_rd = cv2.resize(img_rd, (320,240))
             faces = detector(img_rd)
         process_image = not process_image
         if len(faces) != 0:
             for obj in faces:
-                x = int(obj.rect.x)
-                y = int(obj.rect.y)
-                height = int(obj.rect.h)
-                width = int(obj.rect.w)
-                h = int(height/2)
-                w = int(width/2)
                 lm = [[p.x,p.y] for p in obj.landmark]
                 lm = np.array(lm)
-
-                img_blank = np.zeros(((height*2), (width*2), 3), np.uint8)
-                for ii in range(height*2):
-                    for jj in range(width*2):
-                        img_blank[ii][jj] = img_rd[y - h + ii][x - w + jj]
-                features_a = mfn.extract(img_blank, lm)
-                print(time.time() - t)
+                features_a = mfn.extract(img_rd, lm)
+                print("used:", time.time() - t, "s")
                 most = 0.0
                 most_p = None
                 for x in allf:
