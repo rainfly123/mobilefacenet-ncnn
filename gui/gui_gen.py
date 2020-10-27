@@ -99,6 +99,7 @@ def start():
                                 sg.PopupError("特征提取失败!", font="Any 18", auto_close=True, auto_close_duration=2)
                             else:
                                 print("Save into：", file_name)
+                                pickle.dump(all_features, open('.features','ab+'))
                                 sg.PopupOK("人脸注册成功", font="Any 18", auto_close=True, auto_close_duration=2)
                                 #只录入一次就退出
                                 event, values = window.read(3000)
