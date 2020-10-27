@@ -12,7 +12,7 @@ import pickle
 from retinaface import RetinaFace
 from mbfn import MobileFaceNetV3
 from mbfn import return_similarity
-#from sfas import fake
+from sfas import fake
 
 def show_succeed(name, filename):
     img = Image.open(filename).resize((350,300))
@@ -72,28 +72,31 @@ def start():
                 lm = [[p.x,p.y] for p in obj.landmark]
                 lm = np.array(lm)
                 features_a = mfn.extract(img_rd, lm)
-                print("used:", time.time() - t, "s")
                 most = 0.0
                 most_p = None
                 for x in allf:
                     features_b = x['features']
                     similar = return_similarity(features_a, features_b)
-                    print(similar)
                     if similar > most:
                         most = similar
                         most_p = x
+                print("most similarity:", most)
                 if most_p and most > 0.8:
-                    #val = fake.real_face_ncnn(img_rd, [obj.rect.x, obj.rect.y, obj.rect.x+obj.rect.w, obj.rect.y+obj.rect.h])
-                    #if val <= 0.95:
-                    #    break
+                    val = fake.real_face_ncnn(img_rd, [obj.rect.x, obj.rect.y, obj.rect.x+obj.rect.w, obj.rect.y+obj.rect.h])
+                    print("reality", val)
+                    print("used:", time.time() - t, "s")
+                    if val <= 0.95:
+                        break
                     show_succeed(most_p['name'], most_p['file'])
 
                     #只录入一次就退出
+                    """
                     event, values = window.read(2000)
                     sg.Popup(" 柜门已打开", title="友情提示", font="Any 18", custom_text="  确认  ")
                     cap.release()
                     window.close()
                     return
+                    """
                     last_time = time.time()
     window.close()
 

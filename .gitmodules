@@ -1,0 +1,6 @@
+[submodule "gui/Silent-Face-Anti-Spoofing"]
+	path = gui/Silent-Face-Anti-Spoofing
+	url = https://gitee.com/rainfly123/Silent-Face-Anti-Spoofing
+[submodule "gui/sfas"]
+	path = gui/sfas
+	url = https://gitee.com/rainfly123/Silent-Face-Anti-Spoofing
