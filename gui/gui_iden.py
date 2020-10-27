@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 #coding:utf8
+import sys
+sys.path.append("..")
 import PySimpleGUI as sg
 from PIL import Image, ImageDraw, ImageTk, ImageFont
 import numpy as np   
 import cv2 
 import os
 import time
-import subprocess
+import pickle
 from retinaface import RetinaFace
 from mbfn import MobileFaceNetV3
 from mbfn import return_similarity
@@ -26,6 +28,7 @@ def show_succeed(name, filename):
 
 def start():
     mfn = MobileFaceNetV3()
+    detector =  RetinaFace()
     layout= [
             [sg.Image(filename="logo.png", size=(1200,950), pad=(25,25), key="image")],
             ]
@@ -47,8 +50,8 @@ def start():
             cap.release()
             break
 
-        ret, frame = cap.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        ret, img_rd = cap.read()
+        frame = cv2.cvtColor(img_rd, cv2.COLOR_BGR2RGB)
         im = Image.fromarray(frame)
         draw = ImageDraw.Draw(im)
         draw.text(xy=(130, 40), text='确保人脸在红色方框内', fill=(255, 255, 0), font=font)
@@ -58,20 +61,34 @@ def start():
         window.FindElement("image").update(data=tkimage)
 
         faces = []
+        t = None
         if (time.time() - last_time > 2.0) and process_image:
-            img_rd = cv2.resize(frame, (320, 240))
-            faces = Detect(img_rd)
+            t = time.time()
+            faces = detector(img_rd)
         process_image = not process_image
         if len(faces) != 0:
             for obj in faces:
+                x = int(obj.rect.x)
+                y = int(obj.rect.y)
+                height = int(obj.rect.h)
+                width = int(obj.rect.w)
+                h = int(height/2)
+                w = int(width/2)
                 lm = [[p.x,p.y] for p in obj.landmark]
                 lm = np.array(lm)
-                features_a = mfn.extract(m, lm)
+
+                img_blank = np.zeros(((height*2), (width*2), 3), np.uint8)
+                for ii in range(height*2):
+                    for jj in range(width*2):
+                        img_blank[ii][jj] = img_rd[y - h + ii][x - w + jj]
+                features_a = mfn.extract(img_blank, lm)
+                print(time.time() - t)
                 most = 0.0
                 most_p = None
                 for x in allf:
                     features_b = x['features']
-                    similar = mbfn.return_similarity(features_a, features_b)
+                    similar = return_similarity(features_a, features_b)
+                    print(similar)
                     if similar > most:
                         most = similar
                         most_p = x
@@ -79,31 +96,17 @@ def start():
                     #val = fake.real_face_ncnn(img_rd, [obj.rect.x, obj.rect.y, obj.rect.x+obj.rect.w, obj.rect.y+obj.rect.h])
                     #if val <= 0.95:
                     #    break
-                    show_succeed(x['name'], x['file'])
+                    show_succeed(most_p['name'], most_p['file'])
 
-                    im = Image.fromarray(img_rd)
-                    draw = ImageDraw.Draw(im)
-                    for i in range(68):
-                        x,y = shape.part(i).x, shape.part(i).y
-                        draw.ellipse((x,y, x+1, y+1), 'red')
-                    im = im.resize((1200, 950),Image.ANTIALIAS)
-                    tkimage = ImageTk.PhotoImage(image=im)
-                    window.FindElement("image").update(data=tkimage)
                     #只录入一次就退出
                     event, values = window.read(2000)
                     sg.Popup(" 柜门已打开", title="友情提示", font="Any 18", custom_text="  确认  ")
-                    #ff = subprocess.Popen(["ffplay", "-fs", "-autoexit",'abc.mp4'])
-                    #ff.wait()
                     cap.release()
                     window.close()
                     return
                     last_time = time.time()
     window.close()
 
-def Detect(img):
-    net =  RetinaFace()
-    faceobjects = net(img)
-    return faceobjects
 
 if __name__ == "__main__":
     start()

@@ -113,8 +113,8 @@ def start():
             taken = True
 
         if taken == False:
-            ret, frame = capture.read()
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            ret, oframe = capture.read()
+            frame = cv2.cvtColor(oframe, cv2.COLOR_BGR2RGB)
             im = Image.fromarray(frame)
             draw = ImageDraw.Draw(im)
             draw.text(xy=(130, 400), text='人脸铺满方框保持静止', fill=(255, 0, 0), font=font)
@@ -122,7 +122,7 @@ def start():
             im = im.resize((1216, 912),Image.ANTIALIAS)
             tkimage = ImageTk.PhotoImage(image=im)
             window.FindElement("image").update(data=tkimage)
-            img_rd = frame
+            img_rd = oframe
 
     window.close()
                  
