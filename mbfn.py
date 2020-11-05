@@ -20,7 +20,7 @@ class MobileFaceNetV3():
         self.model = "model/mobilefacenets.bin"
         self.net.load_param(self.param)
         self.net.load_model(self.model)
-        self.num_threads = 2
+        self.num_threads = 3
 
     def extract(self, img_file, landmark=None):
         img = None

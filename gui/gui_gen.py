@@ -79,7 +79,7 @@ def start():
                         h = int(height/2)
                         w = int(width/2)
                         print(x+w, y+h, x-w, y-h)
-                        if (x + w) > 320 or (y + h > 240) or (x - w < 0) or (y - h < 0):
+                        if (x + 4*w) >= 320 or (y + 4*h >= 240) or (x - w < 0) or (y - h < 0):
                             sg.PopupError("特征提取失败，确保人脸在红色方框内", font="Any 18", auto_close=True, auto_close_duration=2)
                         else:
                             img_blank = np.zeros(((height*2), (width*2), 3), np.uint8)
@@ -120,7 +120,7 @@ def start():
             im = Image.fromarray(frame)
             draw = ImageDraw.Draw(im)
             draw.text(xy=(130, 400), text='人脸铺满方框保持静止', fill=(255, 0, 0), font=font)
-            draw.rectangle(xy=(200, 80, 440, 340), fill=None, outline="red", width=2)
+            draw.rectangle(xy=(250, 110, 390, 310), fill=None, outline="red", width=2)
             im = im.resize((1216, 912),Image.ANTIALIAS)
             tkimage = ImageTk.PhotoImage(image=im)
             window.FindElement("image").update(data=tkimage)

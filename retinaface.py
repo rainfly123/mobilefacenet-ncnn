@@ -6,7 +6,7 @@ from ncnn.utils import draw_faceobjects
 from ncnn.utils.objects import Point, Face_Object
 
 class RetinaFace:
-    def __init__(self, prob_threshold=0.8, nms_threshold=0.4, num_threads=2, use_gpu=False):
+    def __init__(self, prob_threshold=0.8, nms_threshold=0.4, num_threads=3, use_gpu=False):
         self.prob_threshold = prob_threshold
         self.nms_threshold = nms_threshold
         self.num_threads = num_threads
